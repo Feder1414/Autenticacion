@@ -23,7 +23,7 @@ class Cliente(models.Model):
     telefono = models.CharField(max_length=15)
     email = models.EmailField()
     fecha_nacimiento = models.DateField()
-    documento = models.CharField(max_length=10) 
+    documento = models.CharField(max_length=10, unique=True) 
     usuario = models.OneToOneField('User', on_delete=models.CASCADE, related_name='cliente')
 
     class Meta:
