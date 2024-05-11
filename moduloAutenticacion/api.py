@@ -1,5 +1,5 @@
 from .models import User, Cliente
-from .serializers import UserSerializer, ClienteSerializer
+from .serializers import UserSerializer, ClienteSerializer, AsesorSerializer
 from django.contrib.auth import authenticate, login
 from rest_framework import status
 from rest_framework.response import Response
@@ -17,7 +17,7 @@ class registrarUsuario(APIView):
         if rol == 'cliente':
             serializer = ClienteSerializer(data=request.data)
         elif rol == 'asesor':
-            serializer = UserSerializer(data=request.data)
+            serializer = AsesorSerializer(data=request.data)
         else:
             return Response({'mensaje': 'El rol es inválido'}, status=status.HTTP_400_BAD_REQUEST)
         
