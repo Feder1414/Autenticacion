@@ -26,7 +26,7 @@ class ClienteSerializer(serializers.ModelSerializer):
         cliente = Cliente.objects.create(usuario=user, **validated_data)
         return cliente
 class AsesorSerializer(serializers.ModelSerializer):
-    usuario = UserSerializer(read_only=True)
+    usuario = UserSerializer(write_only=True)
     class Meta:
         model = Asesor
         fields = ['nombre', 'apellido']
