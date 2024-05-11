@@ -30,3 +30,9 @@ class AsesorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Asesor
         fields = ['nombre', 'apellido', 'usuario']
+    
+    def create(self, validated_data):
+        user_data = validated_data.pop('usuario')
+        user = User.objects.create_user(**user_data)
+        asesor = Asesor.objects.create(usuario=user, **validated_data)
+        return asesor
