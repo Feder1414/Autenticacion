@@ -1,38 +1,38 @@
-from rest_framework import serializers
-from .models import Cliente, User, Asesor
+from rest_framework import serializers, status
+from .models import Usuario
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework.response import Response
 
 
 
-class UserSerializer(serializers.ModelSerializer):
+
+class UsuarioSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(max_length=65, min_length=1, write_only=True)
+    email = serializers.EmailField(required=True)
     class Meta:
-        model = User
-        fields = ['username', 'email', 'rol', 'password']
-        extra_kwargs = {'password': {'write_only': True}}
+        model = Usuario
+        fields = ['username', 'email', 'rol', 'idPersona', "password"]
+        # extra_kwargs = {'password': {'write_only': True}}
     
     def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
-        return user
+        user = Usuario(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            rol=validated_data['rol'],
+            idPersona=validated_data['idPersona']
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+        return Response({'mensaje': 'Usuario creado exitosamente'} , status=status.HTTP_201_CREATED)
     
-class ClienteSerializer(serializers.ModelSerializer):
-    usuario = UserSerializer(write_only=True)
-    class Meta:
-        model = Cliente
-        fields = ['nombre', 'apellido', 'direccion', 'ciudad', 'departamento', 'codigo_postal', 'pais', 'telefono', 'email', 'fecha_nacimiento', 'usuario', 'documento']
 
-    def create(self, validated_data):
-        user_data = validated_data.pop('usuario')
-        user = User.objects.create_user(**user_data)
-        cliente = Cliente.objects.create(usuario=user, **validated_data)
-        return cliente
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        # Add custom claims
+        token['rol'] = user.rol
+        token['idPersona'] = user.idPersona
+        return token
     
-class AsesorSerializer(serializers.ModelSerializer):
-    usuario = UserSerializer(write_only=True)
-    class Meta:
-        model = Asesor
-        fields = ['nombre', 'apellido', 'usuario']
-    
-    def create(self, validated_data):
-        user_data = validated_data.pop('usuario')
-        user = User.objects.create_user(**user_data)
-        asesor = Asesor.objects.create(usuario=user, **validated_data)
-        return asesor
