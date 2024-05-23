@@ -10,6 +10,8 @@ class User(AbstractUser):
     )
 
     rol = models.CharField(max_length=15, choices=ROLE_CHOICES)
+    #asdfsad
+    pepe = 2
 
 
 class Cliente(models.Model):
@@ -25,7 +27,6 @@ class Cliente(models.Model):
     fecha_nacimiento = models.DateField()
     documento = models.CharField(max_length=10, unique=True) 
     usuario = models.OneToOneField('User', on_delete=models.CASCADE, related_name='cliente')
-
     class Meta:
         db_table = 'cliente'
 
